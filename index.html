@@ -3,94 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JJ GAMEZ | Premium Arcade</title>
+    <title>JJ GAMEZ | Premium Web Gaming</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background-color: #0f172a; color: white; }
-        .game-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .game-card:hover { transform: translateY(-10px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(59, 130, 246, 0.5); }
-        .hero-gradient { background: linear-gradient(90deg, #1e293b 0%, #334155 100%); }
+        body {
+            background-color: #0f172a;
+            color: white;
+            font-family: 'Inter', sans-serif;
+        }
+        .logo-font { font-family: 'Orbitron', sans-serif; }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(139, 92, 246, 0.3);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-    <nav class="p-6 flex justify-between items-center bg-slate-900 border-b border-slate-800 sticky top-0 z-50">
-        <h1 class="text-3xl font-900 tracking-tighter text-blue-500">JJ<span class="text-white">GAMEZ</span></h1>
-        <div class="space-x-6 hidden md:flex">
-            <a href="#" class="hover:text-blue-400 transition">Action</a>
-            <a href="#" class="hover:text-blue-400 transition">Puzzle</a>
-            <a href="#" class="hover:text-blue-400 transition">Racing</a>
-            <a href="#" class="hover:text-blue-400 transition">Sports</a>
+    <nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+        <h1 class="logo-font text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-600 bg-clip-text text-transparent">
+            JJ GAMEZ
+        </h1>
+        <div class="hidden md:flex space-x-8 font-medium">
+            <a href="#" class="hover:text-purple-400 transition">New</a>
+            <a href="#" class="hover:text-purple-400 transition">Action</a>
+            <a href="#" class="hover:text-purple-400 transition">Puzzle</a>
+            <a href="#" class="hover:text-purple-400 transition">Racing</a>
         </div>
-        <button class="bg-blue-600 hover:bg-blue-700 px-5 py-2 rounded-full font-bold transition">Login</button>
+        <button class="bg-purple-600 hover:bg-purple-700 px-5 py-2 rounded-full font-bold transition">
+            LOGIN
+        </button>
     </nav>
 
-    <header class="p-10">
-        <div class="hero-gradient rounded-3xl p-12 text-center border border-slate-700">
-            <h2 class="text-5xl font-bold mb-4">Play the Best Games Online</h2>
-            <p class="text-slate-400 text-lg mb-8">No downloads. No installs. Just pure JJ GAMEZ energy.</p>
-            <div class="relative max-w-xl mx-auto">
-                <input type="text" placeholder="Search for games..." class="w-full py-4 px-6 rounded-full bg-slate-800 border border-slate-600 focus:outline-none focus:border-blue-500">
+    <header class="container mx-auto px-6 py-12">
+        <div class="rounded-3xl overflow-hidden relative h-[400px] group">
+            <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&q=80&w=2070" class="w-full h-full object-cover transition duration-500 group-hover:scale-105" alt="Featured">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent flex flex-col justify-end p-10">
+                <span class="bg-pink-600 w-max px-3 py-1 rounded text-xs font-bold mb-4">FEATURED</span>
+                <h2 class="text-4xl font-bold mb-2">Cyber Drift 2026</h2>
+                <p class="text-gray-300 max-w-md mb-6">Experience the ultimate neon-lit racing world. Available now on JJ GAMEZ.</p>
+                <button class="bg-white text-black font-bold py-3 px-8 rounded-lg w-max hover:bg-purple-400 transition">PLAY NOW</button>
             </div>
         </div>
     </header>
 
-    <main class="px-10 pb-20">
-        <h3 class="text-2xl font-bold mb-8 flex items-center">
-            <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span> Trending Now
-        </h3>
-        
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            
-            <div class="game-card bg-slate-800 rounded-2xl overflow-hidden cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop" alt="Game" class="w-full h-40 object-cover">
+    <main class="container mx-auto px-6 pb-20">
+        <div class="flex justify-between items-center mb-8">
+            <h3 class="text-2xl font-bold">Popular Games</h3>
+            <div class="flex gap-2">
+                <button onclick="filterGames('all')" class="px-4 py-1 rounded-full border border-gray-600 hover:bg-white hover:text-black transition">All</button>
+                <button onclick="filterGames('action')" class="px-4 py-1 rounded-full border border-gray-600 hover:bg-white hover:text-black transition">Action</button>
+            </div>
+        </div>
+
+        <div id="gameGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <div class="game-card glass rounded-2xl overflow-hidden transition cursor-pointer" onclick="openGame('https://play.pagerank.com/games/2048/')">
+                <img src="https://images.unsplash.com/photo-1614332287897-cdc485fa562d?auto=format&fit=crop&q=80&w=500" class="w-full h-40 object-cover" alt="2048">
                 <div class="p-4">
-                    <h4 class="font-bold">Neon Rider</h4>
-                    <p class="text-xs text-slate-400">Racing • 4.8★</p>
+                    <h4 class="font-bold">2048 Legend</h4>
+                    <p class="text-xs text-gray-400 mt-1">Puzzle • 4.8★</p>
                 </div>
             </div>
 
-            <div class="game-card bg-slate-800 rounded-2xl overflow-hidden cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1614285457768-646f65ca8548?w=400&h=300&fit=crop" alt="Game" class="w-full h-40 object-cover">
+            <div class="game-card glass rounded-2xl overflow-hidden transition cursor-pointer" onclick="openGame('https://hextris.io/')">
+                <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?auto=format&fit=crop&q=80&w=500" class="w-full h-40 object-cover" alt="Hextris">
                 <div class="p-4">
-                    <h4 class="font-bold">Cyber Strike</h4>
-                    <p class="text-xs text-slate-400">Action • 4.5★</p>
+                    <h4 class="font-bold">Hextris Pro</h4>
+                    <p class="text-xs text-gray-400 mt-1">Arcade • 4.5★</p>
                 </div>
             </div>
 
-            <div class="game-card bg-slate-800 rounded-2xl overflow-hidden cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=400&h=300&fit=crop" alt="Game" class="w-full h-40 object-cover">
+            <div class="game-card glass rounded-2xl overflow-hidden transition cursor-pointer" onclick="openGame('https://pacman.live/')">
+                <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=500" class="w-full h-40 object-cover" alt="Pacman">
                 <div class="p-4">
-                    <h4 class="font-bold">Pixel Quest</h4>
-                    <p class="text-xs text-slate-400">Adventure • 4.9★</p>
+                    <h4 class="font-bold">Retro Chomp</h4>
+                    <p class="text-xs text-gray-400 mt-1">Classic • 4.9★</p>
                 </div>
             </div>
 
-            <div class="game-card bg-slate-800 rounded-2xl overflow-hidden cursor-pointer">
-                <img src="https://images.unsplash.com/photo-1580234811497-9bd7fd0f37a9?w=400&h=300&fit=crop" alt="Game" class="w-full h-40 object-cover">
+            <div class="game-card glass rounded-2xl overflow-hidden transition cursor-pointer" onclick="openGame('https://snake.io/')">
+                <img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?auto=format&fit=crop&q=80&w=500" class="w-full h-40 object-cover" alt="Snake">
                 <div class="p-4">
-                    <h4 class="font-bold">Block Breaker</h4>
-                    <p class="text-xs text-slate-400">Puzzle • 4.2★</p>
+                    <h4 class="font-bold">Snake Neon</h4>
+                    <p class="text-xs text-gray-400 mt-1">Action • 4.2★</p>
                 </div>
             </div>
 
-            <div class="game-card bg-slate-800 rounded-2xl overflow-hidden cursor-pointer">
-                <div class="w-full h-40 bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center">
-                    <span class="text-4xl">🚀</span>
-                </div>
+            <div class="game-card glass rounded-2xl overflow-hidden transition cursor-pointer" onclick="openGame('https://v6p9d9t4.ssl.hwcdn.net/html/1453912/index.html')">
+                <img src="https://images.unsplash.com/photo-1552824730-cf51ab72421c?auto=format&fit=crop&q=80&w=500" class="w-full h-40 object-cover" alt="Space">
                 <div class="p-4">
-                    <h4 class="font-bold">Space Escape</h4>
-                    <p class="text-xs text-slate-400">Arcade • 4.7★</p>
+                    <h4 class="font-bold">Galactic Void</h4>
+                    <p class="text-xs text-gray-400 mt-1">Shooter • 4.7★</p>
                 </div>
             </div>
-
         </div>
     </main>
 
-    <footer class="p-10 bg-slate-950 text-center border-t border-slate-800">
-        <p class="text-slate-500">© 2026 JJ GAMEZ. All Rights Reserved. Stay Epic.</p>
-    </footer>
+    <div id="gameOverlay" class="fixed inset-0 bg-black/95 z-[100] hidden flex-col">
+        <div class="p-4 flex justify-between items-center glass">
+            <h3 id="activeGameTitle" class="logo-font text-xl font-bold">PLAYING...</h3>
+            <button onclick="closeGame()" class="bg-red-600 px-6 py-2 rounded-lg font-bold">EXIT GAME</button>
+        </div>
+        <iframe id="gameFrame" src="" class="w-full flex-grow border-none"></iframe>
+    </div>
 
+    <script>
+        function openGame(url) {
+            document.getElementById('gameFrame').src = url;
+            document.getElementById('gameOverlay').classList.remove('hidden');
+            document.getElementById('gameOverlay').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeGame() {
+            document.getElementById('gameFrame').src = '';
+            document.getElementById('gameOverlay').classList.add('hidden');
+            document.getElementById('gameOverlay').classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        function filterGames(cat) {
+            alert("Filtering for " + cat + " games... (Logic can be expanded here!)");
+        }
+    </script>
 </body>
 </html>
