@@ -3,198 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Arcade | Single-File Game Hub</title>
+    <title>JJGAMEZ | Logic & Math Arcade</title>
     <style>
         :root {
-            /* Light Mode Colors */
-            --bg: #f0f2f5;
-            --card-bg: rgba(255, 255, 255, 0.7);
-            --text: #1a1a1b;
-            --accent: #6366f1;
-            --glass-border: rgba(255, 255, 255, 0.3);
-            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-        }
-
-        [data-theme="dark"] {
-            --bg: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --text: #f8fafc;
-            --accent: #818cf8;
+            --bg: #0b111a;
+            --card-bg: rgba(22, 33, 46, 0.8);
+            --text: #e6edf3;
+            --accent: #2ecc71; /* Cool Math Green */
             --glass-border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
         body {
             background: var(--bg);
             color: var(--text);
-            transition: background 0.3s ease, color 0.3s ease;
-            padding: 2rem;
+            padding: 20px;
             min-height: 100vh;
         }
 
+        /* Header & Navigation */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
+            padding: 20px;
+            border-bottom: 2px solid var(--accent);
+            margin-bottom: 30px;
         }
 
-        .controls { display: flex; gap: 1rem; align-items: center; }
+        .logo { font-size: 2rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
 
-        /* Premium Glassmorphism UI */
-        .glass-panel {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow);
-            border-radius: 16px;
+        .nav-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
         }
 
-        input, button {
-            padding: 0.8rem 1.2rem;
-            border-radius: 12px;
-            border: 1px solid var(--glass-border);
+        .filter-btn {
             background: var(--card-bg);
-            color: var(--text);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: 0.3s;
+            white-space: nowrap;
         }
 
-        button:hover { background: var(--accent); color: white; transform: translateY(-2px); }
-
-        .section-title { margin: 2rem 0 1rem; font-size: 1.5rem; letter-spacing: -0.5px; }
+        .filter-btn.active { background: var(--accent); color: #000; font-weight: bold; }
 
         /* Game Grid */
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
         }
 
         .game-card {
-            position: relative;
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
             overflow: hidden;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: 0.3s;
             cursor: pointer;
-            aspect-ratio: 16/10;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            padding: 1.5rem;
+            text-align: center;
         }
 
         .game-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
         }
 
-        .game-card h3 { font-size: 1.1rem; z-index: 2; }
-        .game-card p { font-size: 0.8rem; opacity: 0.8; z-index: 2; }
+        .game-thumb {
+            width: 100%;
+            height: 120px;
+            background: #1c2128;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
 
-        /* Theater Mode Overlay */
+        .game-info { padding: 12px; }
+        .game-info h3 { font-size: 0.9rem; margin-bottom: 4px; }
+        .game-info p { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; }
+
+        /* Theater Mode */
         #theater {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
+            background: #000;
             display: none;
-            z-index: 1000;
             flex-direction: column;
+            z-index: 9999;
         }
 
-        #theater iframe { flex-grow: 1; border: none; }
-        .theater-nav { padding: 1rem; display: flex; justify-content: space-between; background: #000; }
+        .theater-bar {
+            background: #161b22;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-        .hidden { display: none !important; }
+        iframe { flex-grow: 1; border: none; background: #fff; }
+
+        .btn-close { background: #e74c3c; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Nexus<span style="color:var(--accent)">Arcade</span></h1>
-        <div class="controls">
-            <input type="text" id="searchInput" placeholder="Search games..." oninput="filterGames()">
-            <button onclick="toggleTheme()" id="themeToggle">🌓 Theme</button>
-        </div>
+        <div class="logo">JJ<span style="color:white">GAMEZ</span></div>
+        <input type="text" id="search" placeholder="Search for a game..." oninput="filterBySearch()" 
+               style="background:#1c2128; border:1px solid #30363d; color:white; padding:10px; border-radius:5px; width: 250px;">
     </header>
 
-    <div id="recentContainer" class="hidden">
-        <h2 class="section-title">Recently Played</h2>
-        <div id="recentGrid" class="game-grid"></div>
-        <hr style="margin-top: 2rem; opacity: 0.1;">
+    <div class="nav-filters" id="filters">
+        <button class="filter-btn active" onclick="filterCategory('All')">All Games</button>
+        <button class="filter-btn" onclick="filterCategory('Logic')">Logic</button>
+        <button class="filter-btn" onclick="filterCategory('Strategy')">Strategy</button>
+        <button class="filter-btn" onclick="filterCategory('Skill')">Skill</button>
+        <button class="filter-btn" onclick="filterCategory('Numbers')">Numbers</button>
     </div>
 
-    <h2 class="section-title">All Games</h2>
     <div id="gameGrid" class="game-grid"></div>
 
     <div id="theater">
-        <div class="theater-nav">
-            <button onclick="closeGame()">✕ Close</button>
-            <h2 id="nowPlaying" style="color:white; font-size: 1rem;"></h2>
-            <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        <div class="theater-bar">
+            <h2 id="currentTitle" style="font-size: 1.2rem;"></h2>
+            <button class="btn-close" onclick="closeGame()">Close Game</button>
         </div>
-        <iframe id="gameFrame" allowfullscreen></iframe>
+        <iframe id="gameFrame" src=""></iframe>
     </div>
 
     <script>
-        // High-quality, Iframe-friendly game list
         const games = [
-            { id: 1, title: "2048", url: "https://play2048.co/", category: "Puzzle" },
-            { id: 2, title: "Hextris", url: "https://hextris.io/", category: "Arcade" },
-            { id: 3, title: "Sinuous", url: "https://www.sinuousgame.com/", category: "Avoidance" },
-            { id: 4, title: "紙 (Kami)", url: "https://ncase.me/loopy/", category: "Logic" },
-            { id: 5, title: "Little Alchemy", url: "https://littlealchemy.com/", category: "Puzzle" },
-            { id: 6, title: "Tanuki Sunset", url: "https://en.games.it/embed/tanuki-sunset", category: "Racing" },
-            { id: 7, title: "Vector Funk", url: "https://vectorfunk.com/", category: "Music" },
-            { id: 8, title: "A Dark Room", url: "https://adarkroom.doublespeakgames.com/", category: "RPG" },
-            { id: 9, title: "Cookie Clicker", url: "https://orteil.dashnet.org/cookieclicker/", category: "Idle" },
-            { id: 10, title: "WebGL Fluid", url: "https://paveldogreat.github.io/WebGL-Fluid-Simulation/", category: "Sandbox" }
+            { id: 1, title: "2048", url: "https://play2048.co/", cat: "Numbers", emoji: "🔢" },
+            { id: 2, title: "Hextris", url: "https://hextris.io/", cat: "Skill", emoji: "🔷" },
+            { id: 3, title: "Sinuous", url: "https://www.sinuousgame.com/", cat: "Skill", emoji: "🐍" },
+            { id: 4, title: "A Dark Room", url: "https://adarkroom.doublespeakgames.com/", cat: "Strategy", emoji: "🔥" },
+            { id: 5, title: "Chess", url: "https://lichess.org/training/frame", cat: "Logic", emoji: "♟️" },
+            { id: 6, title: "Sudoku", url: "https://sudoku.com/", cat: "Numbers", emoji: "✍️" },
+            { id: 7, title: "Cookie Clicker", url: "https://orteil.dashnet.org/cookieclicker/", cat: "Skill", emoji: "🍪" },
+            { id: 8, title: "Tower Master", url: "https://p2.f80.org/tower", cat: "Strategy", emoji: "🏰" },
+            { id: 9, title: "Boxy Run", url: "https://boxyrun.com/", cat: "Skill", emoji: "📦" },
+            { id: 10, title: "Color Pipes", url: "https://p2.f80.org/pipes", cat: "Logic", emoji: "🧪" }
         ];
 
-        let favorites = JSON.parse(localStorage.getItem('favs')) || [];
-        let recentlyPlayed = JSON.parse(localStorage.getItem('recent')) || [];
-
-        function init() {
-            renderGames(games, 'gameGrid');
-            updateRecentGrid();
-            applyTheme();
-        }
-
-        function renderGames(gameList, elementId) {
-            const grid = document.getElementById(elementId);
-            grid.innerHTML = gameList.map(game => `
-                <div class="game-card glass-panel" onclick="playGame(${game.id})">
-                    <p>${game.category}</p>
-                    <h3>${game.title}</h3>
+        function render(data) {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = data.map(g => `
+                <div class="game-card" onclick="play(${g.id})">
+                    <div class="game-thumb">${g.emoji}</div>
+                    <div class="game-info">
+                        <h3>${g.title}</h3>
+                        <p>${g.cat}</p>
+                    </div>
                 </div>
             `).join('');
         }
 
-        function playGame(id) {
-            const game = games.find(g => g.id === id);
-            if(!game) return;
+        function filterCategory(cat) {
+            // Update buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText === cat || (cat === 'All' && btn.innerText === 'All Games'));
+            });
 
-            // Update Recently Played
-            recentlyPlayed = [game, ...recentlyPlayed.filter(g => g.id !== id)].slice(0, 4);
-            localStorage.setItem('recent', JSON.stringify(recentlyPlayed));
-            
-            // UI Logic
-            document.getElementById('nowPlaying').innerText = game.title;
-            document.getElementById('gameFrame').src = game.url;
-            document.getElementById('theater').style.display = 'flex';
-            updateRecentGrid();
+            const filtered = cat === 'All' ? games : games.filter(g => g.cat === cat);
+            render(filtered);
         }
 
-        function updateRecentGrid() {
-            const container = document.getElementById('recentContainer');
-            if (recentlyPlayed.length > 0) {
-                container.classList.remove('hidden');
-                renderGames(recentlyPlayed, 'recentGrid');
-            }
+        function filterBySearch() {
+            const term = document.getElementById('search').value.toLowerCase();
+            const filtered = games.filter(g => g.title.toLowerCase().includes(term));
+            render(filtered);
+        }
+
+        function play(id) {
+            const g = games.find(game => game.id === id);
+            document.getElementById('currentTitle').innerText = g.title;
+            document.getElementById('gameFrame').src = g.url;
+            document.getElementById('theater').style.display = 'flex';
         }
 
         function closeGame() {
@@ -202,30 +196,8 @@
             document.getElementById('gameFrame').src = '';
         }
 
-        function filterGames() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = games.filter(g => g.title.toLowerCase().includes(term));
-            renderGames(filtered, 'gameGrid');
-        }
-
-        function toggleTheme() {
-            const current = document.body.getAttribute('data-theme');
-            const target = current === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', target);
-            localStorage.setItem('theme', target);
-        }
-
-        function applyTheme() {
-            const saved = localStorage.getItem('theme') || 'light';
-            document.body.setAttribute('data-theme', saved);
-        }
-
-        function toggleFullscreen() {
-            const elem = document.getElementById("gameFrame");
-            if (elem.requestFullscreen) elem.requestFullscreen();
-        }
-
-        window.onload = init;
+        // Initialize
+        render(games);
     </script>
 </body>
 </html>
