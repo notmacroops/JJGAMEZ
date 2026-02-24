@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JJGAMEZ | Logic & Skill Arcade</title>
+    <title>JJGAMEZ | Cool Math Edition</title>
     <style>
         :root {
-            /* Cool Math Inspired Palette */
             --bg: #0b111a;
             --header-bg: #161b22;
-            --card-bg: rgba(22, 33, 46, 0.9);
+            --accent: #2ecc71; /* Cool Math Green */
+            --card-bg: #1c2128;
             --text: #ffffff;
-            --accent: #2ecc71; /* The classic Logic Green */
             --sub-text: #8b949e;
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
 
-        body {
-            background: var(--bg);
-            color: var(--text);
-            padding-bottom: 50px;
-        }
+        body { background: var(--bg); color: var(--text); padding-bottom: 50px; }
 
-        /* Top Bar */
+        /* Brand Header */
         header {
             background: var(--header-bg);
             padding: 15px 5%;
@@ -32,32 +26,13 @@
             justify-content: space-between;
             align-items: center;
             border-bottom: 3px solid var(--accent);
-            position: sticky;
-            top: 0;
-            z-index: 100;
+            position: sticky; top: 0; z-index: 100;
         }
 
-        .logo {
-            font-size: 2.2rem;
-            font-weight: 900;
-            color: var(--accent);
-            letter-spacing: -2px;
-            text-transform: uppercase;
-        }
+        .logo { font-size: 2.2rem; font-weight: 900; color: var(--accent); letter-spacing: -2px; }
 
-        .search-container input {
-            padding: 10px 20px;
-            border-radius: 20px;
-            border: none;
-            background: #0b111a;
-            color: white;
-            width: 300px;
-            outline: none;
-            border: 1px solid #30363d;
-        }
-
-        /* Categories Bar */
-        .categories {
+        /* Filter Bar */
+        .nav-bar {
             background: #1c2128;
             padding: 10px 5%;
             display: flex;
@@ -66,211 +41,186 @@
             border-bottom: 1px solid #30363d;
         }
 
-        .cat-btn {
-            background: none;
+        .filter-btn {
+            background: transparent;
             border: 1px solid var(--sub-text);
             color: var(--sub-text);
-            padding: 5px 15px;
-            border-radius: 15px;
+            padding: 6px 16px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             white-space: nowrap;
+            transition: 0.2s;
         }
 
-        .cat-btn.active {
+        .filter-btn:hover, .filter-btn.active {
             background: var(--accent);
             color: #000;
             border-color: var(--accent);
             font-weight: bold;
         }
 
-        /* Grids */
+        /* Content Container */
         .container { padding: 20px 5%; }
-        .section-title { 
-            font-size: 1.4rem; 
-            margin: 20px 0; 
+        .section-header { 
+            font-size: 1.5rem; 
+            margin: 25px 0 15px; 
             display: flex; 
             align-items: center; 
-            gap: 10px;
+            gap: 10px; 
         }
-        .section-title::after { content: ""; flex: 1; height: 1px; background: #30363d; }
+        .section-header::after { content: ""; flex: 1; height: 1px; background: #30363d; }
 
+        /* Grid System */
         .game-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
             gap: 20px;
         }
 
-        /* Game Cards */
         .game-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            border-radius: 10px;
             overflow: hidden;
-            border: 1px solid transparent;
-            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
-            position: relative;
+            border: 1px solid transparent;
+            text-align: center;
         }
 
         .game-card:hover {
-            transform: translateY(-8px);
+            transform: scale(1.05);
             border-color: var(--accent);
             box-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
         }
 
-        .game-thumbnail {
-            width: 100%;
-            height: 120px;
-            background: #1c2128;
+        .thumb-box {
+            height: 110px;
+            background: #0b111a;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3rem;
-            transition: 0.3s;
         }
 
-        .game-card:hover .game-thumbnail { font-size: 3.5rem; }
+        .info-box { padding: 12px; }
+        .info-box h3 { font-size: 0.95rem; margin-bottom: 4px; }
+        .info-box p { font-size: 0.75rem; color: var(--accent); text-transform: uppercase; font-weight: bold; }
 
-        .game-info { padding: 12px; }
-        .game-info h3 { font-size: 1rem; margin-bottom: 4px; }
-        .game-info p { font-size: 0.75rem; color: var(--accent); font-weight: bold; }
-
-        /* Fullscreen Player */
-        #theater {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            display: none;
-            flex-direction: column;
-            z-index: 1000;
+        /* Fullscreen Overlay */
+        #player {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; display: none; flex-direction: column; z-index: 2000;
         }
 
-        .theater-nav {
-            background: #161b22;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        .player-bar { background: #161b22; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        iframe { flex-grow: 1; border: none; background: #fff; }
+        .exit-btn { background: #ff4757; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        #gameFrame { flex-grow: 1; border: none; background: #fff; }
-
-        .close-btn { 
-            background: #e74c3c; 
-            color: white; 
-            border: none; 
-            padding: 8px 16px; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold;
-        }
-
-        .hidden { display: none; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">JJ<span style="color:white">GAMEZ</span></div>
-        <div class="search-container">
-            <input type="text" id="gameSearch" placeholder="Search for a game..." oninput="searchGames()">
-        </div>
+        <input type="text" id="search" placeholder="Search for a game..." oninput="search()" 
+               style="background:#0b111a; border:1px solid #30363d; color:white; padding:10px 20px; border-radius:20px; width: 280px;">
     </header>
 
-    <div class="categories" id="catBar">
-        <button class="cat-btn active" onclick="filterCat('All')">All</button>
-        <button class="cat-btn" onclick="filterCat('Logic')">Logic</button>
-        <button class="cat-btn" onclick="filterCat('Skill')">Skill</button>
-        <button class="cat-btn" onclick="filterCat('Numbers')">Numbers</button>
-        <button class="cat-btn" onclick="filterCat('Strategy')">Strategy</button>
+    <div class="nav-bar">
+        <button class="filter-btn active" onclick="filter('All')">All Games</button>
+        <button class="filter-btn" onclick="filter('Logic')">Logic</button>
+        <button class="filter-btn" onclick="filter('Strategy')">Strategy</button>
+        <button class="filter-btn" onclick="filter('Skill')">Skill</button>
+        <button class="filter-btn" onclick="filter('Numbers')">Numbers</button>
     </div>
 
     <div class="container">
-        <div id="recentSection" class="hidden">
-            <h2 class="section-title">Recently Played</h2>
+        <div id="recentContainer" class="hidden">
+            <h2 class="section-header">Recently Played</h2>
             <div id="recentGrid" class="game-grid"></div>
         </div>
 
-        <h2 class="section-title">New & Trending</h2>
+        <h2 class="section-header">Trending Now</h2>
         <div id="mainGrid" class="game-grid"></div>
     </div>
 
-    <div id="theater">
-        <div class="theater-nav">
-            <h2 id="theaterTitle">Game Name</h2>
-            <button class="close-btn" onclick="closeGame()">EXIT GAME</button>
+    <div id="player">
+        <div class="player-bar">
+            <h2 id="playTitle">Game Title</h2>
+            <button class="exit-btn" onclick="stop()">EXIT GAME</button>
         </div>
-        <iframe id="gameFrame" src=""></iframe>
+        <iframe id="frame" src=""></iframe>
     </div>
 
     <script>
-        const gameList = [
+        const library = [
             { id: 1, title: "2048", cat: "Numbers", url: "https://play2048.co/", icon: "🔢" },
             { id: 2, title: "Hextris", cat: "Skill", url: "https://hextris.io/", icon: "🔷" },
             { id: 3, title: "Chess", cat: "Logic", url: "https://lichess.org/training/frame", icon: "♟️" },
             { id: 4, title: "Sudoku", cat: "Numbers", url: "https://sudoku.com/", icon: "✍️" },
             { id: 5, title: "A Dark Room", cat: "Strategy", url: "https://adarkroom.doublespeakgames.com/", icon: "🔥" },
             { id: 6, title: "Vector Funk", cat: "Skill", url: "https://vectorfunk.com/", icon: "🎵" },
-            { id: 7, title: "Connect 4", cat: "Strategy", url: "https://p2.f80.org/c4", icon: "🔴" },
-            { id: 8, title: "Tower Master", cat: "Skill", url: "https://p2.f80.org/tower", icon: "🏰" },
-            { id: 9, title: "Color Pipes", cat: "Logic", url: "https://p2.f80.org/pipes", icon: "🧪" },
-            { id: 10, title: "Mastermind", cat: "Logic", url: "https://p2.f80.org/mm", icon: "🧠" }
+            { id: 7, title: "Cookie Clicker", cat: "Skill", url: "https://orteil.dashnet.org/cookieclicker/", icon: "🍪" },
+            { id: 8, title: "Doodle Jump", cat: "Skill", url: "https://en.games.it/embed/doodle-jump", icon: "🐸" },
+            { id: 9, title: "Tetris", cat: "Logic", url: "https://tetris.com/play-tetris", icon: "🧱" },
+            { id: 10, title: "Minesweeper", cat: "Logic", url: "https://minesweeperonline.com/", icon: "💣" }
         ];
 
-        let recentlyPlayed = JSON.parse(localStorage.getItem('jjRecent')) || [];
+        let history = JSON.parse(localStorage.getItem('jj_recent')) || [];
 
-        function renderGrid(data, elementId) {
-            const grid = document.getElementById(elementId);
-            grid.innerHTML = data.map(game => `
-                <div class="game-card" onclick="launchGame(${game.id})">
-                    <div class="game-thumbnail">${game.icon}</div>
-                    <div class="game-info">
-                        <h3>${game.title}</h3>
-                        <p>${game.cat}</p>
+        function draw(list, target) {
+            const grid = document.getElementById(target);
+            grid.innerHTML = list.map(g => `
+                <div class="game-card" onclick="run(${g.id})">
+                    <div class="thumb-box">${g.icon}</div>
+                    <div class="info-box">
+                        <h3>${g.title}</h3>
+                        <p>${g.cat}</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        function launchGame(id) {
-            const game = gameList.find(g => g.id === id);
-            document.getElementById('theaterTitle').innerText = game.title;
-            document.getElementById('gameFrame').src = game.url;
-            document.getElementById('theater').style.display = 'flex';
+        function run(id) {
+            const game = library.find(g => g.id === id);
+            document.getElementById('playTitle').innerText = game.title;
+            document.getElementById('frame').src = game.url;
+            document.getElementById('player').style.display = 'flex';
 
-            // Update Recent
-            recentlyPlayed = [game, ...recentlyPlayed.filter(g => g.id !== id)].slice(0, 4);
-            localStorage.setItem('jjRecent', JSON.stringify(recentlyPlayed));
-            updateRecentSection();
+            history = [game, ...history.filter(i => i.id !== id)].slice(0, 4);
+            localStorage.setItem('jj_recent', JSON.stringify(history));
+            refreshHistory();
         }
 
-        function closeGame() {
-            document.getElementById('theater').style.display = 'none';
-            document.getElementById('gameFrame').src = '';
+        function stop() {
+            document.getElementById('player').style.display = 'none';
+            document.getElementById('frame').src = '';
         }
 
-        function updateRecentSection() {
-            if (recentlyPlayed.length > 0) {
-                document.getElementById('recentSection').classList.remove('hidden');
-                renderGrid(recentlyPlayed, 'recentGrid');
+        function filter(tag) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.innerText === tag || (tag === 'All' && b.innerText === 'All Games')));
+            const filtered = tag === 'All' ? library : library.filter(g => g.cat === tag);
+            draw(filtered, 'mainGrid');
+        }
+
+        function search() {
+            const val = document.getElementById('search').value.toLowerCase();
+            const found = library.filter(g => g.title.toLowerCase().includes(val));
+            draw(found, 'mainGrid');
+        }
+
+        function refreshHistory() {
+            if (history.length > 0) {
+                document.getElementById('recentContainer').classList.remove('hidden');
+                draw(history, 'recentGrid');
             }
         }
 
-        function filterCat(cat) {
-            document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.innerText === cat));
-            const filtered = cat === 'All' ? gameList : gameList.filter(g => g.cat === cat);
-            renderGrid(filtered, 'mainGrid');
-        }
-
-        function searchGames() {
-            const term = document.getElementById('gameSearch').value.toLowerCase();
-            const filtered = gameList.filter(g => g.title.toLowerCase().includes(term));
-            renderGrid(filtered, 'mainGrid');
-        }
-
-        // Init
-        renderGrid(gameList, 'mainGrid');
-        updateRecentSection();
+        // Boot up
+        draw(library, 'mainGrid');
+        refreshHistory();
     </script>
 </body>
 </html>
