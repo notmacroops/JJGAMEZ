@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Arcade | Single-File Game Hub</title>
+    <style>
+        :root {
+            /* Light Mode Colors */
+            --bg: #f0f2f5;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --text: #1a1a1b;
+            --accent: #6366f1;
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        [data-theme="dark"] {
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text: #f8fafc;
+            --accent: #818cf8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            transition: background 0.3s ease, color 0.3s ease;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .controls { display: flex; gap: 1rem; align-items: center; }
+
+        /* Premium Glassmorphism UI */
+        .glass-panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow);
+            border-radius: 16px;
+        }
+
+        input, button {
+            padding: 0.8rem 1.2rem;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            background: var(--card-bg);
+            color: var(--text);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover { background: var(--accent); color: white; transform: translateY(-2px); }
+
+        .section-title { margin: 2rem 0 1rem; font-size: 1.5rem; letter-spacing: -0.5px; }
+
+        /* Game Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .game-card {
+            position: relative;
+            overflow: hidden;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            aspect-ratio: 16/10;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 1.5rem;
+        }
+
+        .game-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+
+        .game-card h3 { font-size: 1.1rem; z-index: 2; }
+        .game-card p { font-size: 0.8rem; opacity: 0.8; z-index: 2; }
+
+        /* Theater Mode Overlay */
+        #theater {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: none;
+            z-index: 1000;
+            flex-direction: column;
+        }
+
+        #theater iframe { flex-grow: 1; border: none; }
+        .theater-nav { padding: 1rem; display: flex; justify-content: space-between; background: #000; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Nexus<span style="color:var(--accent)">Arcade</span></h1>
+        <div class="controls">
+            <input type="text" id="searchInput" placeholder="Search games..." oninput="filterGames()">
+            <button onclick="toggleTheme()" id="themeToggle">🌓 Theme</button>
+        </div>
+    </header>
+
+    <div id="recentContainer" class="hidden">
+        <h2 class="section-title">Recently Played</h2>
+        <div id="recentGrid" class="game-grid"></div>
+        <hr style="margin-top: 2rem; opacity: 0.1;">
+    </div>
+
+    <h2 class="section-title">All Games</h2>
+    <div id="gameGrid" class="game-grid"></div>
+
+    <div id="theater">
+        <div class="theater-nav">
+            <button onclick="closeGame()">✕ Close</button>
+            <h2 id="nowPlaying" style="color:white; font-size: 1rem;"></h2>
+            <button onclick="toggleFullscreen()">⛶ Fullscreen</button>
+        </div>
+        <iframe id="gameFrame" allowfullscreen></iframe>
+    </div>
+
+    <script>
+        // High-quality, Iframe-friendly game list
+        const games = [
+            { id: 1, title: "2048", url: "https://play2048.co/", category: "Puzzle" },
+            { id: 2, title: "Hextris", url: "https://hextris.io/", category: "Arcade" },
+            { id: 3, title: "Sinuous", url: "https://www.sinuousgame.com/", category: "Avoidance" },
+            { id: 4, title: "紙 (Kami)", url: "https://ncase.me/loopy/", category: "Logic" },
+            { id: 5, title: "Little Alchemy", url: "https://littlealchemy.com/", category: "Puzzle" },
+            { id: 6, title: "Tanuki Sunset", url: "https://en.games.it/embed/tanuki-sunset", category: "Racing" },
+            { id: 7, title: "Vector Funk", url: "https://vectorfunk.com/", category: "Music" },
+            { id: 8, title: "A Dark Room", url: "https://adarkroom.doublespeakgames.com/", category: "RPG" },
+            { id: 9, title: "Cookie Clicker", url: "https://orteil.dashnet.org/cookieclicker/", category: "Idle" },
+            { id: 10, title: "WebGL Fluid", url: "https://paveldogreat.github.io/WebGL-Fluid-Simulation/", category: "Sandbox" }
+        ];
+
+        let favorites = JSON.parse(localStorage.getItem('favs')) || [];
+        let recentlyPlayed = JSON.parse(localStorage.getItem('recent')) || [];
+
+        function init() {
+            renderGames(games, 'gameGrid');
+            updateRecentGrid();
+            applyTheme();
+        }
+
+        function renderGames(gameList, elementId) {
+            const grid = document.getElementById(elementId);
+            grid.innerHTML = gameList.map(game => `
+                <div class="game-card glass-panel" onclick="playGame(${game.id})">
+                    <p>${game.category}</p>
+                    <h3>${game.title}</h3>
+                </div>
+            `).join('');
+        }
+
+        function playGame(id) {
+            const game = games.find(g => g.id === id);
+            if(!game) return;
+
+            // Update Recently Played
+            recentlyPlayed = [game, ...recentlyPlayed.filter(g => g.id !== id)].slice(0, 4);
+            localStorage.setItem('recent', JSON.stringify(recentlyPlayed));
+            
+            // UI Logic
+            document.getElementById('nowPlaying').innerText = game.title;
+            document.getElementById('gameFrame').src = game.url;
+            document.getElementById('theater').style.display = 'flex';
+            updateRecentGrid();
+        }
+
+        function updateRecentGrid() {
+            const container = document.getElementById('recentContainer');
+            if (recentlyPlayed.length > 0) {
+                container.classList.remove('hidden');
+                renderGames(recentlyPlayed, 'recentGrid');
+            }
+        }
+
+        function closeGame() {
+            document.getElementById('theater').style.display = 'none';
+            document.getElementById('gameFrame').src = '';
+        }
+
+        function filterGames() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = games.filter(g => g.title.toLowerCase().includes(term));
+            renderGames(filtered, 'gameGrid');
+        }
+
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            const target = current === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', target);
+            localStorage.setItem('theme', target);
+        }
+
+        function applyTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            document.body.setAttribute('data-theme', saved);
+        }
+
+        function toggleFullscreen() {
+            const elem = document.getElementById("gameFrame");
+            if (elem.requestFullscreen) elem.requestFullscreen();
+        }
+
+        window.onload = init;
+    </script>
+</body>
+</html>
