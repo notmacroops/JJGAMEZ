@@ -3,192 +3,245 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JJGAMEZ | Logic & Math Arcade</title>
+    <title>JJGAMEZ | Logic & Skill Arcade</title>
     <style>
         :root {
+            /* Cool Math Inspired Palette */
             --bg: #0b111a;
-            --card-bg: rgba(22, 33, 46, 0.8);
-            --text: #e6edf3;
-            --accent: #2ecc71; /* Cool Math Green */
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --header-bg: #161b22;
+            --card-bg: rgba(22, 33, 46, 0.9);
+            --text: #ffffff;
+            --accent: #2ecc71; /* The classic Logic Green */
+            --sub-text: #8b949e;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
         body {
             background: var(--bg);
             color: var(--text);
-            padding: 20px;
-            min-height: 100vh;
+            padding-bottom: 50px;
         }
 
-        /* Header & Navigation */
+        /* Top Bar */
         header {
+            background: var(--header-bg);
+            padding: 15px 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            border-bottom: 2px solid var(--accent);
-            margin-bottom: 30px;
+            border-bottom: 3px solid var(--accent);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .logo { font-size: 2rem; font-weight: 800; color: var(--accent); text-transform: uppercase; }
-
-        .nav-filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            overflow-x: auto;
-            padding-bottom: 10px;
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -2px;
+            text-transform: uppercase;
         }
 
-        .filter-btn {
-            background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            color: white;
+        .search-container input {
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 20px;
+            border: none;
+            background: #0b111a;
+            color: white;
+            width: 300px;
+            outline: none;
+            border: 1px solid #30363d;
+        }
+
+        /* Categories Bar */
+        .categories {
+            background: #1c2128;
+            padding: 10px 5%;
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .cat-btn {
+            background: none;
+            border: 1px solid var(--sub-text);
+            color: var(--sub-text);
+            padding: 5px 15px;
+            border-radius: 15px;
             cursor: pointer;
+            font-size: 0.8rem;
             white-space: nowrap;
         }
 
-        .filter-btn.active { background: var(--accent); color: #000; font-weight: bold; }
+        .cat-btn.active {
+            background: var(--accent);
+            color: #000;
+            border-color: var(--accent);
+            font-weight: bold;
+        }
 
-        /* Game Grid */
+        /* Grids */
+        .container { padding: 20px 5%; }
+        .section-title { 
+            font-size: 1.4rem; 
+            margin: 20px 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px;
+        }
+        .section-title::after { content: ""; flex: 1; height: 1px; background: #30363d; }
+
         .game-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
             gap: 20px;
         }
 
+        /* Game Cards */
         .game-card {
             background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            transition: 0.3s;
+            border: 1px solid transparent;
+            transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            text-align: center;
+            position: relative;
         }
 
         .game-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-8px);
             border-color: var(--accent);
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.3);
+            box-shadow: 0 0 20px rgba(46, 204, 113, 0.2);
         }
 
-        .game-thumb {
+        .game-thumbnail {
             width: 100%;
             height: 120px;
             background: #1c2128;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 3rem;
+            transition: 0.3s;
         }
 
-        .game-info { padding: 12px; }
-        .game-info h3 { font-size: 0.9rem; margin-bottom: 4px; }
-        .game-info p { font-size: 0.7rem; color: var(--accent); text-transform: uppercase; }
+        .game-card:hover .game-thumbnail { font-size: 3.5rem; }
 
-        /* Theater Mode */
+        .game-info { padding: 12px; }
+        .game-info h3 { font-size: 1rem; margin-bottom: 4px; }
+        .game-info p { font-size: 0.75rem; color: var(--accent); font-weight: bold; }
+
+        /* Fullscreen Player */
         #theater {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: #000;
             display: none;
             flex-direction: column;
-            z-index: 9999;
+            z-index: 1000;
         }
 
-        .theater-bar {
+        .theater-nav {
             background: #161b22;
-            padding: 15px;
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        iframe { flex-grow: 1; border: none; background: #fff; }
+        #gameFrame { flex-grow: 1; border: none; background: #fff; }
 
-        .btn-close { background: #e74c3c; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
+        .close-btn { 
+            background: #e74c3c; 
+            color: white; 
+            border: none; 
+            padding: 8px 16px; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;
+        }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">JJ<span style="color:white">GAMEZ</span></div>
-        <input type="text" id="search" placeholder="Search for a game..." oninput="filterBySearch()" 
-               style="background:#1c2128; border:1px solid #30363d; color:white; padding:10px; border-radius:5px; width: 250px;">
+        <div class="search-container">
+            <input type="text" id="gameSearch" placeholder="Search for a game..." oninput="searchGames()">
+        </div>
     </header>
 
-    <div class="nav-filters" id="filters">
-        <button class="filter-btn active" onclick="filterCategory('All')">All Games</button>
-        <button class="filter-btn" onclick="filterCategory('Logic')">Logic</button>
-        <button class="filter-btn" onclick="filterCategory('Strategy')">Strategy</button>
-        <button class="filter-btn" onclick="filterCategory('Skill')">Skill</button>
-        <button class="filter-btn" onclick="filterCategory('Numbers')">Numbers</button>
+    <div class="categories" id="catBar">
+        <button class="cat-btn active" onclick="filterCat('All')">All</button>
+        <button class="cat-btn" onclick="filterCat('Logic')">Logic</button>
+        <button class="cat-btn" onclick="filterCat('Skill')">Skill</button>
+        <button class="cat-btn" onclick="filterCat('Numbers')">Numbers</button>
+        <button class="cat-btn" onclick="filterCat('Strategy')">Strategy</button>
     </div>
 
-    <div id="gameGrid" class="game-grid"></div>
+    <div class="container">
+        <div id="recentSection" class="hidden">
+            <h2 class="section-title">Recently Played</h2>
+            <div id="recentGrid" class="game-grid"></div>
+        </div>
+
+        <h2 class="section-title">New & Trending</h2>
+        <div id="mainGrid" class="game-grid"></div>
+    </div>
 
     <div id="theater">
-        <div class="theater-bar">
-            <h2 id="currentTitle" style="font-size: 1.2rem;"></h2>
-            <button class="btn-close" onclick="closeGame()">Close Game</button>
+        <div class="theater-nav">
+            <h2 id="theaterTitle">Game Name</h2>
+            <button class="close-btn" onclick="closeGame()">EXIT GAME</button>
         </div>
         <iframe id="gameFrame" src=""></iframe>
     </div>
 
     <script>
-        const games = [
-            { id: 1, title: "2048", url: "https://play2048.co/", cat: "Numbers", emoji: "🔢" },
-            { id: 2, title: "Hextris", url: "https://hextris.io/", cat: "Skill", emoji: "🔷" },
-            { id: 3, title: "Sinuous", url: "https://www.sinuousgame.com/", cat: "Skill", emoji: "🐍" },
-            { id: 4, title: "A Dark Room", url: "https://adarkroom.doublespeakgames.com/", cat: "Strategy", emoji: "🔥" },
-            { id: 5, title: "Chess", url: "https://lichess.org/training/frame", cat: "Logic", emoji: "♟️" },
-            { id: 6, title: "Sudoku", url: "https://sudoku.com/", cat: "Numbers", emoji: "✍️" },
-            { id: 7, title: "Cookie Clicker", url: "https://orteil.dashnet.org/cookieclicker/", cat: "Skill", emoji: "🍪" },
-            { id: 8, title: "Tower Master", url: "https://p2.f80.org/tower", cat: "Strategy", emoji: "🏰" },
-            { id: 9, title: "Boxy Run", url: "https://boxyrun.com/", cat: "Skill", emoji: "📦" },
-            { id: 10, title: "Color Pipes", url: "https://p2.f80.org/pipes", cat: "Logic", emoji: "🧪" }
+        const gameList = [
+            { id: 1, title: "2048", cat: "Numbers", url: "https://play2048.co/", icon: "🔢" },
+            { id: 2, title: "Hextris", cat: "Skill", url: "https://hextris.io/", icon: "🔷" },
+            { id: 3, title: "Chess", cat: "Logic", url: "https://lichess.org/training/frame", icon: "♟️" },
+            { id: 4, title: "Sudoku", cat: "Numbers", url: "https://sudoku.com/", icon: "✍️" },
+            { id: 5, title: "A Dark Room", cat: "Strategy", url: "https://adarkroom.doublespeakgames.com/", icon: "🔥" },
+            { id: 6, title: "Vector Funk", cat: "Skill", url: "https://vectorfunk.com/", icon: "🎵" },
+            { id: 7, title: "Connect 4", cat: "Strategy", url: "https://p2.f80.org/c4", icon: "🔴" },
+            { id: 8, title: "Tower Master", cat: "Skill", url: "https://p2.f80.org/tower", icon: "🏰" },
+            { id: 9, title: "Color Pipes", cat: "Logic", url: "https://p2.f80.org/pipes", icon: "🧪" },
+            { id: 10, title: "Mastermind", cat: "Logic", url: "https://p2.f80.org/mm", icon: "🧠" }
         ];
 
-        function render(data) {
-            const grid = document.getElementById('gameGrid');
-            grid.innerHTML = data.map(g => `
-                <div class="game-card" onclick="play(${g.id})">
-                    <div class="game-thumb">${g.emoji}</div>
+        let recentlyPlayed = JSON.parse(localStorage.getItem('jjRecent')) || [];
+
+        function renderGrid(data, elementId) {
+            const grid = document.getElementById(elementId);
+            grid.innerHTML = data.map(game => `
+                <div class="game-card" onclick="launchGame(${game.id})">
+                    <div class="game-thumbnail">${game.icon}</div>
                     <div class="game-info">
-                        <h3>${g.title}</h3>
-                        <p>${g.cat}</p>
+                        <h3>${game.title}</h3>
+                        <p>${game.cat}</p>
                     </div>
                 </div>
             `).join('');
         }
 
-        function filterCategory(cat) {
-            // Update buttons
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText === cat || (cat === 'All' && btn.innerText === 'All Games'));
-            });
-
-            const filtered = cat === 'All' ? games : games.filter(g => g.cat === cat);
-            render(filtered);
-        }
-
-        function filterBySearch() {
-            const term = document.getElementById('search').value.toLowerCase();
-            const filtered = games.filter(g => g.title.toLowerCase().includes(term));
-            render(filtered);
-        }
-
-        function play(id) {
-            const g = games.find(game => game.id === id);
-            document.getElementById('currentTitle').innerText = g.title;
-            document.getElementById('gameFrame').src = g.url;
+        function launchGame(id) {
+            const game = gameList.find(g => g.id === id);
+            document.getElementById('theaterTitle').innerText = game.title;
+            document.getElementById('gameFrame').src = game.url;
             document.getElementById('theater').style.display = 'flex';
+
+            // Update Recent
+            recentlyPlayed = [game, ...recentlyPlayed.filter(g => g.id !== id)].slice(0, 4);
+            localStorage.setItem('jjRecent', JSON.stringify(recentlyPlayed));
+            updateRecentSection();
         }
 
         function closeGame() {
@@ -196,8 +249,28 @@
             document.getElementById('gameFrame').src = '';
         }
 
-        // Initialize
-        render(games);
+        function updateRecentSection() {
+            if (recentlyPlayed.length > 0) {
+                document.getElementById('recentSection').classList.remove('hidden');
+                renderGrid(recentlyPlayed, 'recentGrid');
+            }
+        }
+
+        function filterCat(cat) {
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.toggle('active', b.innerText === cat));
+            const filtered = cat === 'All' ? gameList : gameList.filter(g => g.cat === cat);
+            renderGrid(filtered, 'mainGrid');
+        }
+
+        function searchGames() {
+            const term = document.getElementById('gameSearch').value.toLowerCase();
+            const filtered = gameList.filter(g => g.title.toLowerCase().includes(term));
+            renderGrid(filtered, 'mainGrid');
+        }
+
+        // Init
+        renderGrid(gameList, 'mainGrid');
+        updateRecentSection();
     </script>
 </body>
 </html>
