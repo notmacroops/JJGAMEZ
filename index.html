@@ -1,118 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JJ GAMEZ | Play Now</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-        body { background-color: #0f172a; font-family: 'Poppins', sans-serif; color: white; }
-        .game-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .game-card:hover { transform: scale(1.05); z-index: 10; cursor: pointer; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #8b5cf6; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 10px; }
-    </style>
-</head>
-<body class="overflow-x-hidden">
-
-    <header class="bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 p-4 border-b border-slate-700">
-        <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <h1 class="text-3xl font-800 tracking-tighter text-indigo-500 italic">JJ GAMEZ</h1>
-            
-            <div class="relative w-full md:w-1/2">
-                <input type="text" id="searchInput" onkeyup="searchGames()" placeholder="Search 100+ games..." 
-                       class="w-full bg-slate-800 border border-slate-600 rounded-full py-2 px-6 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition">
-            </div>
-
-            <div class="flex gap-4 overflow-x-auto pb-2 md:pb-0">
-                <button onclick="filterCat('All')" class="whitespace-nowrap px-4 py-1 rounded-full bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold">All</button>
-                <button onclick="filterCat('Action')" class="whitespace-nowrap px-4 py-1 rounded-full bg-slate-700 hover:bg-slate-600 text-sm font-semibold">Action</button>
-                <button onclick="filterCat('Puzzle')" class="whitespace-nowrap px-4 py-1 rounded-full bg-slate-700 hover:bg-slate-600 text-sm font-semibold">Puzzle</button>
-                <button onclick="filterCat('Classic')" class="whitespace-nowrap px-4 py-1 rounded-full bg-slate-700 hover:bg-slate-600 text-sm font-semibold">Classic</button>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a9b5c" />
+    <title>Math Arcade — Free browser games</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="top-inner">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">🎮</span>
+          <span>Math Arcade</span>
         </div>
+        <span class="tagline">Free games in your browser</span>
+        <span id="profile-greeting" class="profile-greeting" hidden></span>
+        <div class="header-actions">
+          <label class="sort-label" for="sort">Sort</label>
+          <select id="sort" class="sort-select" title="Sort games" aria-label="Sort games">
+            <option value="original">Original order</option>
+            <option value="az">Name A–Z</option>
+            <option value="za">Name Z–A</option>
+            <option value="toplocal">Your top played</option>
+            <option value="globalhot">Global hot today</option>
+          </select>
+          <button type="button" id="btn-random" class="header-btn" title="Random game (R)">Random</button>
+          <button type="button" id="btn-theme" class="header-btn" title="Toggle light/dark theme">Dark</button>
+          <button type="button" id="btn-settings" class="header-btn" title="Settings &amp; profile">⚙ Settings</button>
+        </div>
+        <div class="search-wrap">
+          <input
+            type="search"
+            id="search"
+            placeholder="Search games…"
+            autocomplete="off"
+            aria-label="Search games"
+          />
+        </div>
+      </div>
     </header>
 
-    <main class="container mx-auto p-6">
-        <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            </div>
+    <main>
+      <div class="hero">
+        <h1>Play free games in your browser</h1>
+        <p>Play here or download the HTML to play offline. Keyboard: <kbd>R</kbd> random · <kbd>F</kbd> fullscreen in game · <kbd>Esc</kbd> close</p>
+        <p class="game-count-line"><span id="game-count">0</span> games shown</p>
+      </div>
+
+      <section id="section-recent" class="strip-section" hidden>
+        <div class="strip-head">
+          <h2 class="strip-title">Recently played</h2>
+        </div>
+        <div id="recent-strip" class="strip-scroll"></div>
+      </section>
+
+      <section id="section-hot" class="strip-section" hidden>
+        <div class="strip-head">
+          <h2 class="strip-title">Trending today</h2>
+          <p class="strip-note">Based on global CDN requests (not individual people). Real “who’s online” needs a server.</p>
+        </div>
+        <div id="hot-strip" class="strip-scroll"></div>
+      </section>
+
+      <div id="categories" class="categories"></div>
+
+      <p id="status" class="status">Loading games…</p>
+      <div id="grid" class="grid"></div>
     </main>
 
-    <div id="playerOverlay" class="fixed inset-0 bg-slate-950 z-[100] hidden flex-col">
-        <div class="p-4 flex justify-between items-center bg-slate-900">
-            <h2 id="nowPlayingTitle" class="font-bold text-xl text-indigo-400">Loading...</h2>
-            <button onclick="closeGame()" class="bg-red-500 hover:bg-red-600 px-6 py-2 rounded-lg font-bold transition">CLOSE</button>
+    <footer>
+      <p>Not affiliated with Coolmath Games LLC.</p>
+    </footer>
+
+    <div id="modal-settings" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title" hidden>
+      <div class="modal-panel">
+        <div class="modal-head">
+          <h2 id="modal-settings-title">Settings &amp; profile</h2>
+          <button type="button" class="modal-close" id="modal-settings-close" title="Close">✕</button>
         </div>
-        <div class="relative flex-grow flex items-center justify-center">
-            <div id="gameLoadingSpinner" class="absolute loader"></div>
-            <iframe id="gameFrame" src="" class="w-full h-full border-none z-10" onload="document.getElementById('gameLoadingSpinner').style.display='none'"></iframe>
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>Profile (optional)</h3>
+            <p class="modal-hint">Stored only on this device — not a real account.</p>
+            <div class="modal-row">
+              <label for="input-display-name">Display name</label>
+              <input type="text" id="input-display-name" maxlength="32" placeholder="Player" autocomplete="username" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="btn-save-profile" class="modal-btn primary">Save</button>
+              <button type="button" id="btn-clear-profile" class="modal-btn">Sign out</button>
+            </div>
+          </section>
+          <section class="modal-section">
+            <h3>Display</h3>
+            <label class="check-row">
+              <input type="checkbox" id="set-show-global-cards" />
+              Show global activity on cards
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="set-show-hot-strip" />
+              Show “Trending today” strip
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="set-show-concurrent" />
+              Show rough “active now” estimate (from CDN volume)
+            </label>
+          </section>
+          <section class="modal-section">
+            <h3>Your data</h3>
+            <button type="button" id="btn-clear-recent" class="modal-btn">Clear recently played</button>
+            <button type="button" id="btn-clear-counts" class="modal-btn">Clear play counts</button>
+            <button type="button" id="btn-clear-fav" class="modal-btn">Clear favorites</button>
+          </section>
         </div>
-    </header>
+      </div>
+    </div>
 
-    <script>
-        // Verified game library (Safe to embed)
-        const games = [
-            { title: "2048 Classic", cat: "Puzzle", img: "https://images.unsplash.com/photo-1614332287897-cdc485fa562d?w=300", url: "https://play.pagerank.com/games/2048/" },
-            { title: "Hextris", cat: "Action", img: "https://images.unsplash.com/photo-1611996575749-79a3a250f948?w=300", url: "https://hextris.io/" },
-            { title: "Snake Neon", cat: "Classic", img: "https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=300", url: "https://snake.io/" },
-            { title: "Color Tunnel", cat: "Action", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300", url: "https://v6p9d9t4.ssl.hwcdn.net/html/1453912/index.html" },
-            { title: "Space Invaders", cat: "Classic", img: "https://images.unsplash.com/photo-1552824730-cf51ab72421c?w=300", url: "https://freeinvaders.org/" },
-            { title: "Tetris Pro", cat: "Puzzle", img: "https://images.unsplash.com/photo-1605142859862-978be7eba909?w=300", url: "https://tetris.com/play-tetris" },
-            { title: "Wordle Clone", cat: "Puzzle", img: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=300", url: "https://www.nytimes.com/games/wordle/index.html" },
-            { title: "Chess Online", cat: "Puzzle", img: "https://images.unsplash.com/photo-1528819622765-d6bcf132f793?w=300", url: "https://lichess.org/training/frame" },
-            { title: "Flappy Bird", cat: "Action", img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=300", url: "https://flappybird.io/" },
-            { title: "Doodle Jump", cat: "Action", img: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300", url: "https://doodlejump.io/" }
-        ];
+    <div id="player" class="player-overlay" role="dialog" aria-modal="true" aria-label="Game player">
+      <div class="player-toolbar">
+        <span id="player-title" class="game-name">Game</span>
+        <span id="player-stats" class="player-stats"></span>
+        <button type="button" id="player-fs" title="Fullscreen (F)">Fullscreen</button>
+        <a href="#" id="player-open-tab" target="_blank" rel="noopener">New tab</a>
+        <button type="button" id="player-download">Download</button>
+        <button type="button" id="player-close" class="btn-close" title="Close (Esc)">✕ Close</button>
+      </div>
+      <div class="player-frame-wrap">
+        <div id="player-loading" class="player-loading" hidden>
+          <div class="player-spinner" aria-hidden="true"></div>
+          <p>Loading game…</p>
+        </div>
+        <iframe id="player-frame" title="Game" allow="fullscreen; gamepad; autoplay; clipboard-read; clipboard-write"></iframe>
+      </div>
+    </div>
 
-        const grid = document.getElementById('gameGrid');
-
-        function displayGames(gameList) {
-            grid.innerHTML = '';
-            gameList.forEach(game => {
-                grid.innerHTML += `
-                    <div class="game-card bg-slate-800 rounded-xl overflow-hidden shadow-lg border border-slate-700" onclick="openGame('${game.url}', '${game.title}')">
-                        <img src="${game.img}" class="w-full h-32 object-cover opacity-80 hover:opacity-100 transition">
-                        <div class="p-3">
-                            <h3 class="font-bold text-sm truncate">${game.title}</h3>
-                            <span class="text-[10px] uppercase tracking-widest text-indigo-400 font-bold">${game.cat}</span>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        function openGame(url, title) {
-            document.getElementById('nowPlayingTitle').innerText = "PLAYING: " + title;
-            document.getElementById('gameLoadingSpinner').style.display = 'block';
-            document.getElementById('gameFrame').src = url;
-            document.getElementById('playerOverlay').classList.replace('hidden', 'flex');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeGame() {
-            document.getElementById('gameFrame').src = '';
-            document.getElementById('playerOverlay').classList.replace('flex', 'hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        function searchGames() {
-            const term = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = games.filter(g => g.title.toLowerCase().includes(term));
-            displayGames(filtered);
-        }
-
-        function filterCat(cat) {
-            if(cat === 'All') return displayGames(games);
-            const filtered = games.filter(g => g.cat === cat);
-            displayGames(filtered);
-        }
-
-        // Initial Load
-        displayGames(games);
-    </script>
-</body>
+    <script src="js/app.js"></script>
+  </body>
 </html>
