@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a9b5c" />
+    <title>Math Arcade — Free browser games</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="top-inner">
+        <div class="brand">
+          <span class="brand-icon" aria-hidden="true">🎮</span>
+          <span>Math Arcade</span>
+        </div>
+        <span class="tagline">Free games in your browser</span>
+        <span id="profile-greeting" class="profile-greeting" hidden></span>
+        <div class="header-actions">
+          <label class="sort-label" for="sort">Sort</label>
+          <select id="sort" class="sort-select" title="Sort games" aria-label="Sort games">
+            <option value="original">Original order</option>
+            <option value="az">Name A–Z</option>
+            <option value="za">Name Z–A</option>
+            <option value="toplocal">Your top played</option>
+            <option value="globalhot">Global hot today</option>
+          </select>
+          <button type="button" id="btn-random" class="header-btn" title="Random game (R)">Random</button>
+          <button type="button" id="btn-theme" class="header-btn" title="Toggle light/dark theme">Dark</button>
+          <button type="button" id="btn-settings" class="header-btn" title="Settings &amp; profile">⚙ Settings</button>
+        </div>
+        <div class="search-wrap">
+          <input
+            type="search"
+            id="search"
+            placeholder="Search games…"
+            autocomplete="off"
+            aria-label="Search games"
+          />
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="hero">
+        <h1>Play free games in your browser</h1>
+        <p>Play here or download the HTML to play offline. Keyboard: <kbd>R</kbd> random · <kbd>F</kbd> fullscreen in game · <kbd>Esc</kbd> close</p>
+        <p class="game-count-line"><span id="game-count">0</span> games shown</p>
+      </div>
+
+      <section id="section-recent" class="strip-section" hidden>
+        <div class="strip-head">
+          <h2 class="strip-title">Recently played</h2>
+        </div>
+        <div id="recent-strip" class="strip-scroll"></div>
+      </section>
+
+      <section id="section-hot" class="strip-section" hidden>
+        <div class="strip-head">
+          <h2 class="strip-title">Trending today</h2>
+          <p class="strip-note">Based on global CDN requests (not individual people). Real “who’s online” needs a server.</p>
+        </div>
+        <div id="hot-strip" class="strip-scroll"></div>
+      </section>
+
+      <div id="categories" class="categories"></div>
+
+      <p id="status" class="status">Loading games…</p>
+      <div id="grid" class="grid"></div>
+    </main>
+
+    <footer>
+      <p>Not affiliated with Coolmath Games LLC.</p>
+    </footer>
+
+    <div id="modal-settings" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-settings-title" hidden>
+      <div class="modal-panel">
+        <div class="modal-head">
+          <h2 id="modal-settings-title">Settings &amp; profile</h2>
+          <button type="button" class="modal-close" id="modal-settings-close" title="Close">✕</button>
+        </div>
+        <div class="modal-body">
+          <section class="modal-section">
+            <h3>Profile (optional)</h3>
+            <p class="modal-hint">Stored only on this device — not a real account.</p>
+            <div class="modal-row">
+              <label for="input-display-name">Display name</label>
+              <input type="text" id="input-display-name" maxlength="32" placeholder="Player" autocomplete="username" />
+            </div>
+            <div class="modal-actions">
+              <button type="button" id="btn-save-profile" class="modal-btn primary">Save</button>
+              <button type="button" id="btn-clear-profile" class="modal-btn">Sign out</button>
+            </div>
+          </section>
+          <section class="modal-section">
+            <h3>Display</h3>
+            <label class="check-row">
+              <input type="checkbox" id="set-show-global-cards" />
+              Show global activity on cards
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="set-show-hot-strip" />
+              Show “Trending today” strip
+            </label>
+            <label class="check-row">
+              <input type="checkbox" id="set-show-concurrent" />
+              Show rough “active now” estimate (from CDN volume)
+            </label>
+          </section>
+          <section class="modal-section">
+            <h3>Your data</h3>
+            <button type="button" id="btn-clear-recent" class="modal-btn">Clear recently played</button>
+            <button type="button" id="btn-clear-counts" class="modal-btn">Clear play counts</button>
+            <button type="button" id="btn-clear-fav" class="modal-btn">Clear favorites</button>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="player" class="player-overlay" role="dialog" aria-modal="true" aria-label="Game player">
+      <div class="player-toolbar">
+        <span id="player-title" class="game-name">Game</span>
+        <span id="player-stats" class="player-stats"></span>
+        <button type="button" id="player-fs" title="Fullscreen (F)">Fullscreen</button>
+        <a href="#" id="player-open-tab" target="_blank" rel="noopener">New tab</a>
+        <button type="button" id="player-download">Download</button>
+        <button type="button" id="player-close" class="btn-close" title="Close (Esc)">✕ Close</button>
+      </div>
+      <div class="player-frame-wrap">
+        <div id="player-loading" class="player-loading" hidden>
+          <div class="player-spinner" aria-hidden="true"></div>
+          <p>Loading game…</p>
+        </div>
+        <iframe id="player-frame" title="Game" allow="fullscreen; gamepad; autoplay; clipboard-read; clipboard-write"></iframe>
+      </div>
+    </div>
+
+    <script src="js/app.js"></script>
+  </body>
+</html>
